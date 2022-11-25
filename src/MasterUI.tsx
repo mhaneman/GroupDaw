@@ -1,8 +1,6 @@
 import React from 'react'
 import * as Tone from "tone";
 
-import styles from "./DrumMachine.module.scss";
-
 type Props = {
   isPlaying: any;
   setIsPlaying: any;
@@ -31,11 +29,11 @@ export default function MasterUI({ isPlaying, setIsPlaying}: Props) {
 
   return (
     <div>
-        <button onClick={handleStartClick} className={styles.button}>
+        <button onClick={handleStartClick} className="btn-primary">
           {isPlaying ? "Pause" : "Start"}
         </button>
 
-        <label className={styles.fader}>
+        <label className="fader">
           <span>BPM </span>
           <input
             type="range"

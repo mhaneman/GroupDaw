@@ -1,16 +1,18 @@
-:root {
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  font-size: 16px;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-*:focus,
-*:focus-visible,
-*:focus-within {
-  outline-color: #90cdf4;
-}
+@layer components {
+  .btn-primary {
+    @apply border-none cursor-pointer appearance-none bg-[#005da5] text-white
+    w-[80px] rounded-[4px] leading-loose font-bold transition-opacity
+  }
 
-body {
-  display: grid;
-  place-content: center;
-  min-height: 100vh;
+  .fader {
+    @apply flex items-center gap-x-2
+  }
+
+  .invisibleInput {
+    @apply absolute bg-clip-border border-0 h-[1px] w-[1px] m-[-1px] p-0 overflow-hidden whitespace-nowrap
+  }
 }

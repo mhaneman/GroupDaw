@@ -94,7 +94,8 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
     <div className={styles.machine}>
 
       {/* layout channel names */}
-      <div className={styles.labelList}>
+      {/* styles.labelList */}
+      <div className="place-self-end flex flex-col gap-y-4">
         {samples.map((sample, i) => (
           <>
             <div>{sample.name}</div>
@@ -112,12 +113,15 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
         ))}
       </div>
 
-      <div className={styles.grid}>
+      {/* styles.grid */}
+      <div className="flex flex-col gap-y-2">
 
         {/* map checked boxes to Tone */}
-        <div className={styles.row}>
+        {/* styles.row -> missing: nth-child */}
+        <div className="flex gap-x-2">
           {stepIds.map((stepId) => (
-            <label className={styles.lamp}>
+            // styles.lamp
+            <label className="">
               <input
                 type="radio"
                 name="lamp"
@@ -127,22 +131,27 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
                   if (!elm) return;
                   lampsRef.current[stepId] = elm;
                 }}
-                className={styles.lamp__input}
+                // styles.lamp__input
+                className="invisibleInput checked:bg-[#ff5b06]"
               />
-              <div className={styles.lamp__content} />
+              {/* styles.lamp__content */}
+              <div className="w-4 h-4 mx-2 rounded-lg bg-[#ccc]" />
             </label>
           ))}
         </div>
         
 
         {/* draw grid and enable / disable boxes */}
-        <div className={styles.cellList}>
+        {/* styles.cellList */}
+        <div className="flex flex-col gap-y-2">
           {trackIds.map((trackId) => (
-            <div key={trackId} className={styles.row}>
+            // styles.row -> need to add nth-child logic
+            <div key={trackId} className="flex gap-x-2 ">
               {stepIds.map((stepId) => {
                 const id = trackId + "-" + stepId;
                 return (
-                  <label className={styles.cell}>
+                  // styles.cell
+                  <label className="cursor-pointer">
                     <input
                       key={id}
                       id={id}
@@ -154,9 +163,11 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
                         }
                         stepsRef.current[trackId][stepId] = elm;
                       }}
-                      className={styles.cell__input}
+                      // styles.cell__input
+                      className="invisibleInput checked:bg-[#005da5]"
                     />
-                    <div className={styles.cell__content} />
+                    {/* styles.cell__content */}
+                    <div className="w-8 h-10 rounded-[3px] bg-[#ccc]" />
                   </label>
                 );
               })}
@@ -166,16 +177,19 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
       </div>
 
       {/* local controls */}
-      <div className={styles.controls}>
-        <button onClick={handleClear} className={styles.button}>
+      {/* styles.controls --> missing: "grid-column: 2*/}
+      <div className="flex items-center gap-x-4">
+      
+        <button onClick={handleClear} className="btn-primary">
           Clear
         </button>
 
-        <button onClick={handleTechno} className={styles.button}>
+        <button onClick={handleTechno} className="btn-primary">
           Techno
         </button>
 
-        <label className={styles.fader}>
+        
+        <label className="fader">
           <span> Channel Vol</span>
           <input
             type="range"
@@ -187,7 +201,7 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
           />
         </label>
 
-        <label className={styles.fader}>
+        <label className="fader">
           <span> Channel Pan</span>
           <input
             type="range"
