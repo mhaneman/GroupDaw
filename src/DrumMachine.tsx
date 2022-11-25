@@ -1,6 +1,5 @@
 import React from "react";
 import * as Tone from "tone";
-import { PanVol } from "tone";
 
 import styles from "./DrumMachine.module.scss";
 
@@ -12,12 +11,14 @@ type Track = {
 };
 
 type Props = {
+  isPlaying: any;
+  setIsPlaying: any;
   samples: { url: string; name: string }[];
   numOfSteps?: number;
 };
 
-export default function DrumMachine({ samples, numOfSteps = 8 }: Props) {
-  const [isPlaying, setIsPlaying] = React.useState(false);
+export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSteps = 8 }: Props) {
+  var channel = new Tone.Channel().toDestination();
 
   const tracksRef = React.useRef<Track[]>([]);
   const stepsRef = React.useRef<HTMLInputElement[][]>([[]]);
@@ -26,17 +27,6 @@ export default function DrumMachine({ samples, numOfSteps = 8 }: Props) {
 
   const trackIds = [...Array(samples.length).keys()] as const;
   const stepIds = [...Array(numOfSteps).keys()] as const;
-
-  const handleStartClick = async () => {
-    if (Tone.Transport.state === "started") {
-      Tone.Transport.pause();
-      setIsPlaying(false);
-    } else {
-      await Tone.start();
-      Tone.Transport.start();
-      setIsPlaying(true);
-    }
-  };
 
   const handleClear = () => {
     stepsRef.current.forEach((instr) => instr.forEach((s) => s.checked = false));
@@ -53,17 +43,12 @@ export default function DrumMachine({ samples, numOfSteps = 8 }: Props) {
       .forEach((s) => s.checked = true);
   }
 
-  const handleBpmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    Tone.Transport.bpm.value = Number(e.target.value);
-  };
-
   const handleMasterVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     Tone.Destination.volume.value = Tone.gainToDb(Number(e.target.value));
   };
 
   const handleMasterPanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const panVol = new Tone.PanVol(-0.25, -12)
-    Tone.Destination.chain(panVol);
+    channel.pan.value = Number(e.target.value);
   };
 
   const handleChannelVolumeChange = (e: React.ChangeEvent<HTMLInputElement>, i) => {
@@ -78,7 +63,7 @@ export default function DrumMachine({ samples, numOfSteps = 8 }: Props) {
         urls: {
           [NOTE]: sample.url,
         },
-      }).toDestination(),
+      }).connect(channel),
     }));
 
     // create a new Tone Sequence and apply the steps
@@ -180,12 +165,8 @@ export default function DrumMachine({ samples, numOfSteps = 8 }: Props) {
         </div>
       </div>
 
-      {/* global controls */}
+      {/* local controls */}
       <div className={styles.controls}>
-        <button onClick={handleStartClick} className={styles.button}>
-          {isPlaying ? "Pause" : "Start"}
-        </button>
-
         <button onClick={handleClear} className={styles.button}>
           Clear
         </button>
@@ -195,19 +176,7 @@ export default function DrumMachine({ samples, numOfSteps = 8 }: Props) {
         </button>
 
         <label className={styles.fader}>
-          <span>BPM {Math.trunc(Tone.Transport.bpm.value)}</span>
-          <input
-            type="range"
-            min={30}
-            max={300}
-            step={1}
-            onChange={handleBpmChange}
-            defaultValue={120}
-          />
-        </label>
-
-        <label className={styles.fader}>
-          <span> Master Vol</span>
+          <span> Channel Vol</span>
           <input
             type="range"
             min={0}
@@ -219,7 +188,7 @@ export default function DrumMachine({ samples, numOfSteps = 8 }: Props) {
         </label>
 
         <label className={styles.fader}>
-          <span> Master Pan</span>
+          <span> Channel Pan</span>
           <input
             type="range"
             min={-1}
@@ -229,6 +198,7 @@ export default function DrumMachine({ samples, numOfSteps = 8 }: Props) {
             defaultValue={0}
           />
         </label>
+
       </div>
     </div>
   );
