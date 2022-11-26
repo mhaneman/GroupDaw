@@ -155,7 +155,7 @@ export default function DrumMachine({samples, numOfSteps = 8 }: Props) {
 
       <div className={styles.grid}>
 
-        {/* map checked boxes to Tone */}
+        {/* move position of lamp */}
         <div className={styles.row}>
           {stepIds.map((stepId) => (
             <label className={styles.lamp}>
@@ -176,7 +176,7 @@ export default function DrumMachine({samples, numOfSteps = 8 }: Props) {
         </div>
         
 
-        {/* draw grid and enable / disable boxes */}
+        {/* draw grid and add enable / disable boxes */}
         <div className={styles.cellList}>
           {trackIds.map((trackId) => (
             <div key={trackId} className={styles.row}>
