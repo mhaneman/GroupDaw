@@ -12,8 +12,6 @@ export default function App() {
         setIsPlaying={setIsPlaying}
         />
       <DrumMachine
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
         samples={[
           { url: "/hat-closed.wav", name: "CH" },
           { url: "/clap.wav", name: "CL" },
@@ -23,8 +21,6 @@ export default function App() {
       />
 
       <DrumMachine
-      isPlaying={isPlaying}
-      setIsPlaying={setIsPlaying}
         samples={[
           { url: "/hat-closed.wav", name: "CH" },
           { url: "/clap.wav", name: "CL" },

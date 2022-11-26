@@ -11,13 +11,11 @@ type Track = {
 };
 
 type Props = {
-  isPlaying: any;
-  setIsPlaying: any;
   samples: { url: string; name: string }[];
   numOfSteps?: number;
 };
 
-export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSteps = 8 }: Props) {
+export default function DrumMachine({samples, numOfSteps = 8 }: Props) {
   var channel = new Tone.Channel().toDestination();
 
   const tracksRef = React.useRef<Track[]>([]);
@@ -32,6 +30,10 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
     stepsRef.current.forEach((instr) => instr.forEach((s) => s.checked = false));
   }
 
+  const handleStop = () => {
+    seqRef.current?.stop();
+  }
+
   const handleTechno = () => {
     handleClear();
 
@@ -43,15 +45,15 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
       .forEach((s) => s.checked = true);
   }
 
-  const handleMasterVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    Tone.Destination.volume.value = Tone.gainToDb(Number(e.target.value));
+  const handleChannelVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    channel.volume.value = Tone.gainToDb(Number(e.target.value));
   };
 
-  const handleMasterPanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChannelPanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     channel.pan.value = Number(e.target.value);
   };
 
-  const handleChannelVolumeChange = (e: React.ChangeEvent<HTMLInputElement>, i) => {
+  const handleSampleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>, i) => {
     tracksRef.current[i].sampler.volume.value = Tone.gainToDb(Number(e.target.value));
   };
 
@@ -93,6 +95,45 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
   return (
     <div className={styles.machine}>
 
+      {/* local controls */}
+      <div className={styles.controls}>
+        <button onClick={handleClear} className={styles.button}>
+          Clear
+        </button>
+
+        <button onClick={handleStop} className={styles.button}>
+          Stop
+        </button>
+
+        <button onClick={handleTechno} className={styles.button}>
+          Techno
+        </button>
+
+        <label className={styles.fader}>
+          <span> Channel Vol</span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={handleChannelVolumeChange}
+            defaultValue={1}
+          />
+        </label>
+
+        <label className={styles.fader}>
+          <span> Channel Pan</span>
+          <input
+            type="range"
+            min={-1}
+            max={1}
+            step={0.01}
+            onChange={handleChannelPanChange}
+            defaultValue={0}
+          />
+        </label>
+      </div>
+
       {/* layout channel names */}
       <div className={styles.labelList}>
         {samples.map((sample, i) => (
@@ -104,7 +145,7 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
                 min={0}
                 max={1}
                 step={0.01}
-                onChange={(e) => handleChannelVolumeChange(e, i)}
+                onChange={(e) => handleSampleVolumeChange(e, i)}
                 defaultValue={120}
               />
           </label>
@@ -163,42 +204,6 @@ export default function DrumMachine({ isPlaying, setIsPlaying, samples, numOfSte
             </div>
           ))}
         </div>
-      </div>
-
-      {/* local controls */}
-      <div className={styles.controls}>
-        <button onClick={handleClear} className={styles.button}>
-          Clear
-        </button>
-
-        <button onClick={handleTechno} className={styles.button}>
-          Techno
-        </button>
-
-        <label className={styles.fader}>
-          <span> Channel Vol</span>
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.01}
-            onChange={handleMasterVolumeChange}
-            defaultValue={1}
-          />
-        </label>
-
-        <label className={styles.fader}>
-          <span> Channel Pan</span>
-          <input
-            type="range"
-            min={-1}
-            max={1}
-            step={0.01}
-            onChange={handleMasterPanChange}
-            defaultValue={0}
-          />
-        </label>
-
       </div>
     </div>
   );

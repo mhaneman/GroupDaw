@@ -30,7 +30,7 @@ export default function MasterUI({ isPlaying, setIsPlaying}: Props) {
   };
 
   return (
-    <div>
+    <div className=''>
         <button onClick={handleStartClick} className={styles.button}>
           {isPlaying ? "Pause" : "Start"}
         </button>

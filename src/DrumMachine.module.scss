@@ -32,7 +32,7 @@ $rowGap: 8px;
   row-gap: $rowGap;
 
   & > * {
-    height: $cellHeight;
+    // height: $cellHeight;
     display: grid;
     place-content: center;
   }
