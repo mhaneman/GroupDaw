@@ -75,7 +75,7 @@ export default function DrumMachine({samples, numOfSteps = 8 }: Props) {
           if (stepsRef.current[trk.id]?.[step]?.checked) {
             trk.sampler.triggerAttack(NOTE, time);
           }
-          // visually show dot for current step
+          // keep track of lamp
           lampsRef.current[step].checked = true;
         });
       },
