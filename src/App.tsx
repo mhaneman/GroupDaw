@@ -1,8 +1,9 @@
 import React from "react";
 
 import DrumMachine from "./DrumMachine";
+import Keyboard from "./Keyboard";
 import MasterUI from "./MasterUI";
-import PianoRoll from "./PianoRoll";
+
 
 export default function App() {
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -30,8 +31,7 @@ export default function App() {
         ]}
       />
 
-      <PianoRoll />
-  
+      <Keyboard />
     </>
   );
 }

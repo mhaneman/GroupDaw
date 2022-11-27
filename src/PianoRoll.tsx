@@ -5,6 +5,7 @@ import { Resizable } from "re-resizable"
 import styles from './PianoRoll.module.scss'
 
 import useWindowDimensions from './hooks/useWindowDimensions';
+import Keyboard from './Keyboard';
 
 // TODO 
 
@@ -28,15 +29,8 @@ export default function PianoRoll({numOfSteps = 8}) {
 
   return (
     <div>
+      <Keyboard />
       <Grid />
-    </div>
-  )
-}
-
-function Keyboard() {
-  return (
-    <div>
-      
     </div>
   )
 }

@@ -32,9 +32,6 @@ export default function SynthSampler({numOfSteps = 16 }: Props) {
   // [[C, C#, D, etc], [C, C#, D, etc]]
 
 
-
-
-
   return (
     <div>
       Synth
