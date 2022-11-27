@@ -2,7 +2,7 @@ import React from "react";
 
 import DrumMachine from "./DrumMachine";
 import MasterUI from "./MasterUI";
-import Synth from "./Synth";
+import PianoRoll from "./PianoRoll";
 
 export default function App() {
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -29,7 +29,9 @@ export default function App() {
           { url: "/kick.wav", name: "BD" },
         ]}
       />
-      <Synth />
+
+      <PianoRoll />
+  
     </>
   );
 }

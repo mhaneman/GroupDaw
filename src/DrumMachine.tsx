@@ -34,17 +34,6 @@ export default function DrumMachine({samples, numOfSteps = 8 }: Props) {
     seqRef.current?.stop();
   }
 
-  const handleTechno = () => {
-    handleClear();
-
-    stepsRef.current[0]
-      .filter((e, i) => {return (i % 2) === 0})
-      .forEach((s) => s.checked = true);
-    stepsRef.current[3]
-      .filter((e, i) => {return i % 4 === 0})
-      .forEach((s) => s.checked = true);
-  }
-
   const handleChannelVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     channel.volume.value = Tone.gainToDb(Number(e.target.value));
   };
@@ -103,10 +92,6 @@ export default function DrumMachine({samples, numOfSteps = 8 }: Props) {
 
         <button onClick={handleStop} className={styles.button}>
           Stop
-        </button>
-
-        <button onClick={handleTechno} className={styles.button}>
-          Techno
         </button>
 
         <label className={styles.fader}>
