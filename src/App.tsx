@@ -1,8 +1,8 @@
 import React from "react";
 
 import DrumMachine from "./DrumMachine";
-import Keyboard from "./Keyboard";
 import MasterUI from "./MasterUI";
+import PianoRoll from "./PianoRoll";
 
 
 export default function App() {
@@ -21,17 +21,7 @@ export default function App() {
           { url: "/kick.wav", name: "BD" },
         ]}
       />
-
-      <DrumMachine
-        samples={[
-          { url: "/hat-closed.wav", name: "CH" },
-          { url: "/clap.wav", name: "CL" },
-          { url: "/snare.wav", name: "SD" },
-          { url: "/kick.wav", name: "BD" },
-        ]}
-      />
-
-      <Keyboard />
+      <PianoRoll />
     </>
   );
 }

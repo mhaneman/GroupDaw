@@ -1,9 +1,7 @@
 import React from 'react'
 
-function Editor() {
+export default function Editor() {
   return (
     <div>Editor</div>
   )
 }
-
-export default Editor

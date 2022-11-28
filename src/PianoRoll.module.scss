@@ -1,11 +1,18 @@
-.note {
-    position: absolute;
-    cursor: move;
-    color: white;
-    background: black;
-    max-width: 215px;
-    border-radius: 5px;
-    padding: 1em;
-    margin: auto;
-    user-select: none;
-  }
+.keyboard {
+  display: flex;
+  flex-direction: column;
+}
+
+.piano_roll {
+  display: flex;
+}
+
+.piano_roll_editor {
+  background: repeating-linear-gradient(
+  180deg,
+  #606dbc,
+  #606dbc 25px,
+  #465298 25px,
+  #465298 50px
+  );
+}

@@ -1,6 +1,7 @@
 import React from 'react'
 import * as Tone from "tone";
-import { Sampler } from 'tone';
+
+import styles from './PianoRoll.module.scss'
 
 type Prop = {
     sampler: Tone.Sampler
@@ -8,7 +9,7 @@ type Prop = {
 
 export default function Keyboard() {
   var channel = new Tone.Channel().toDestination();
-  channel.volume.value = Tone.gainToDb(Number(0.1));
+  channel.volume.value = Tone.gainToDb(Number(0.5));
 
   const sampler = new Tone.Sampler({
     urls: {
@@ -23,7 +24,7 @@ export default function Keyboard() {
     };
 
     return (
-    <div>
+    <div className={styles.keyboard}>
         {pitches.map((pitch) => <Key name={pitch} action={handleClick}/>)}
     </div>
     )
@@ -34,10 +35,17 @@ type KeyProp = {
     action: any;
 }
 
+
+
 const Key = ({name, action}: KeyProp) => {
 
     if (name.includes("#")) {
-        return (<button onClick={() => action(name)} style={{backgroundColor: "black", color:"white"}}> {name} </button>);
+        return (
+        <button onClick={() => action(name)} 
+            style={{backgroundColor: "black", color:"white", width:"50px", height:"25px"}}> 
+            {name} </button>);
     }
-    return (<button onClick={()=> action(name)}> {name} </button>);
+    return (<button onClick={()=> action(name)} 
+        style={{backgroundColor: "white", color:"black", width:"50px", height:"25px"}}> 
+        {name} </button>);
 }

@@ -15,7 +15,7 @@ type Props = {
   numOfSteps?: number;
 };
 
-export default function DrumMachine({samples, numOfSteps = 8 }: Props) {
+export default function DrumMachine({samples, numOfSteps = 16 }: Props) {
   var channel = new Tone.Channel().toDestination();
 
   const tracksRef = React.useRef<Track[]>([]);
