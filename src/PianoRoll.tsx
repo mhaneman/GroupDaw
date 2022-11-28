@@ -46,15 +46,33 @@ export default function PianoRoll({numOfSteps = 16}) {
     backgroundSize: 'cover'
   }
 
+  const [area, setArea] = useState({width: 1200, height: 300});
+
+  const [notes, setNotes] = useState([{x: 0, y:0}]);
+
+  const handleAddNewNote = (event) => {
+    const local_x = event.clientX - event.target.offsetLeft;
+    const local_y = event.clientY - event.target.offsetTop;
+    console.log(local_x, local_y);
+    setNotes([...notes, {x:local_x, y:local_y}]);
+  }
+
   return (
-    <div className="">
+    <div className="" onDoubleClick={handleAddNewNote}>
       <Measures />
-      <div className={styles.piano_roll} style={{height: '300px', width: '1200px', position: 'relative', overflow: 'auto', padding: '0'}}>
+      <Resizable className={styles.piano_roll} style={{position: 'relative', overflow: 'auto', padding: '0'}}
+        size={{ width: area.width, height: area.height }}
+        onResizeStop={(e, direction, ref, d) => {
+          setArea({
+            width: area.width + d.width,
+            height: area.height + d.height,
+          });
+        }}>
         <Keyboard />
         <div style={bc_style}>
-          <Note />
+          {notes.map(() => <Note />)}
         </div>
-      </div>
+      </Resizable>
     </div>
   )
 }
@@ -70,6 +88,7 @@ function Measures() {
 // change this to a class --> get property of position
 // with the get property of position --> return a note value
 // with the get property of position --> return a time
+// double click --> remove this note
 
 function Note() {
   const [area, setArea] = useState({width: 320, height: 25});
@@ -93,7 +112,7 @@ function Note() {
   const {deltaPosition } = state;
     
   return (
-  <Draggable handle="#handle" grid={[25, 25]} bounds="parent" onDrag={handleDrag}>
+  <Draggable handle="#handle" grid={[25, 25]} bounds="parent" position={{x: 200, y:200}} onDrag={handleDrag}>
     <Resizable
       size={{ width: area.width, height: area.height }}
       style={{border: "1px solid black"}}
