@@ -10,20 +10,9 @@ import useWindowDimensions from './hooks/useWindowDimensions';
 import Keyboard from './Keyboard';
 
 // TODO 
-// 1.
-// create boxes than can be resized on the right side -- done
-// these boxes are draggable when selected in the middle -- done
-
-// 2. 
-// create grid -- done 
-// add a piano on the side -- done
-
-// 3
-// these boxes snap to quarter note sections -- kinda
-// double click to add a new note -- done
-
-// 4
-// schedule notes to play right pitch and time
+// schedule notes to play right pitch and time --> fix pitch
+// visually split measures / sub measures
+// s
 
 export default function PianoRoll({numOfSteps = 16}) {
 
@@ -49,10 +38,17 @@ export default function PianoRoll({numOfSteps = 16}) {
 
   const [notes, setNotes] = useState([{x: 0, y:0}]);
 
+  // doesnt work. need to figure out why
   const handleAddNewNote = (event) => {
-    const local_x = event.clientX - event.target.offsetLeft;
-    const local_y = event.clientY - event.target.offsetTop;
-    setNotes([...notes, {x:local_x, y:local_y}]);
+    var bounds = event.target.getBoundingClientRect();
+    const local_x = event.clientX - bounds.left;
+    const local_y = event.clientY - bounds.top;
+
+    let m = 25
+    const quant_x = m*Math.floor(local_x/m)
+    const quant_y = m*Math.floor(local_y/m)
+
+    setNotes([...notes, {x:quant_x, y:quant_y}]);
   }
 
   return (
@@ -67,7 +63,7 @@ export default function PianoRoll({numOfSteps = 16}) {
         }}>
         <Keyboard />
         <div style={bc_style}>
-          {notes.map(() => <Note instr={sampler}/>)}
+          {notes.map((note) => <Note instr={sampler} init_pos={note}/>)}
         </div>
       </Resizable>
     </div>
@@ -77,11 +73,11 @@ export default function PianoRoll({numOfSteps = 16}) {
 
 // double click --> remove this note
 // need to convert note pos to absolute position
-function Note({instr}) {
+function Note({instr, init_pos}) {
   
   // need to create an absolute position
-  const [pos, setPos] = useState({x:0, y:0});
-  const [area, setArea] = useState({width:400, height: 25});
+  const [pos, setPos] = useState(init_pos);
+  const [area, setArea] = useState({width:100, height: 25});
 
   const noteRef = React.useRef<Tone.ToneEvent | null>(null); 
 
@@ -122,14 +118,14 @@ function Note({instr}) {
   }
 
   return (
-    <Draggable handle="#handle" grid={[25, 25]} bounds="parent" defaultPosition={{x:0, y: 0}} onDrag={handleDrag}>
+    <Draggable handle="#handle" grid={[25, 25]} bounds="parent" defaultPosition={init_pos} onDrag={handleDrag}>
       <Resizable
         size={{ width: area.width, height: area.height }}
-        style={{border: "1px solid black"}}
+        style={{position: "absolute", border: "1px solid black"}}
         onResizeStop={(e, direction, ref, d) => handleArea(d)}>
           
           <div id="handle" style={{backgroundColor: "#25838a", color:"white"}}>
-            Sample note -- x: {pos.x.toFixed(0)}, y: {pos.y.toFixed(0)}
+            {pos.x.toFixed(0)} {pos.y.toFixed(0)}
           </div>
         </Resizable>
     </Draggable>
