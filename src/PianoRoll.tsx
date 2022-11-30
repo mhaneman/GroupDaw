@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Draggable from 'react-draggable';
 import { Resizable } from "re-resizable"
+import { useSelectionContainer } from '@air/react-drag-to-select'
 
 import * as Tone from "tone";
 
@@ -8,7 +9,7 @@ import styles from './PianoRoll.module.scss'
 
 import Keyboard from './Keyboard';
 
-export default function PianoRoll({schedule}) {
+export default function PianoRoll() {
 
   var channel = new Tone.Channel().toDestination();
   channel.volume.value = Tone.gainToDb(Number(0.3));
@@ -35,8 +36,7 @@ export default function PianoRoll({schedule}) {
     backgroundSize: 'cover'
   }
 
-  // doesnt work. need to figure out why
-  const handleAddNewNote = (event) => {
+  const handleDoubleClick = (event) => {
     var bounds = event.target.getBoundingClientRect();
     const local_x = event.clientX - bounds.left;
     const local_y = event.clientY - bounds.top;
@@ -45,6 +45,12 @@ export default function PianoRoll({schedule}) {
     const quant_y = gridGap*Math.floor(local_y/gridGap)
 
     setNotes([...notes, {x:quant_x, y:quant_y}]);
+  }
+
+  const handleClick = (event) => {
+    if (event.shiftKey) {
+      console.log("shift event");
+    }
   }
 
   const handlePlusSize = () => {
@@ -56,12 +62,26 @@ export default function PianoRoll({schedule}) {
     setgridGap(gridGap - 10);
   }
 
+  // need to figure out how to exclude when dragging notes
+  const { DragSelection } = useSelectionContainer({
+    shouldStartSelecting: (target) => {
+      if (target instanceof HTMLElement) {
+        let el = target;
+        while (el.parentElement && !el.dataset.disableselect) {
+          el = el.parentElement;
+        }
+        return el.dataset.disableselect !== "true";
+      }
+      return false;
+    }
+  });
+
   return (
-    <div className="" onDoubleClick={handleAddNewNote}>
+    <div className="" onClick={handleClick} onDoubleClick={handleDoubleClick}>
       <button onClick={handleMinusSize}>-</button>
       <button onClick={handlePlusSize}>+</button>
 
-      <Resizable className={styles.piano_roll} style={{position: 'relative', overflow: 'auto', padding: '0', overflowY: 'visible'}}
+      <Resizable className={styles.piano_roll} style={{position: 'relative', overflow: 'auto', padding: '0', overflowY: 'auto'}}
         size={{ width: area.width, height: area.height }}
         onResizeStop={(e, direction, ref, d) => {
           setArea({
@@ -71,6 +91,7 @@ export default function PianoRoll({schedule}) {
         }}>
         <Keyboard instr={sampler} gridGap={gridGap}/>
         <div style={piano_roll_editor_style}>
+          {/* <DragSelection/> */}
           {notes.map((note) => <Note instr={sampler} gridGap={gridGap} init_pos={note} measures={measures} />)}
         </div>
       </Resizable>
@@ -83,7 +104,6 @@ type NoteProps = {
   gridGap: any,
   init_pos: any,
   measures: any,
-  isLoopMode: boolean
 };
 
 
@@ -95,6 +115,10 @@ function Note({instr, gridGap, init_pos, measures}: NoteProps) {
 
   // need a use effect to reposition and resize notes
 
+  // IMPORTAINT need to refactor ToneEvent. 
+  // have a state for time and note
+  // pass these to parent
+  // have parent foreach notes inside ToneEvent 
   useEffect(() => {
     const pitches = ["C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3"];
     var pitch = pitches.at((pitches.length - 1) - pos.y / gridGap);

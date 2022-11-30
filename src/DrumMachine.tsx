@@ -42,7 +42,7 @@ export default function DrumMachine({samples, numOfSteps = 16 }: Props) {
     channel.pan.value = Number(e.target.value);
   };
 
-  const handleSampleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>, i) => {
+  const handleSampleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>, i: any) => {
     tracksRef.current[i].sampler.volume.value = Tone.gainToDb(Number(e.target.value));
   };
 
