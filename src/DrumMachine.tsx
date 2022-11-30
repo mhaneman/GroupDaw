@@ -119,7 +119,7 @@ export default function DrumMachine({samples, numOfSteps = 16 }: Props) {
         </label>
       </div>
 
-      {/* layout channel names */}
+      {/* add faders to samples */}
       <div className={styles.labelList}>
         {samples.map((sample, i) => (
           <>
@@ -188,6 +188,7 @@ export default function DrumMachine({samples, numOfSteps = 16 }: Props) {
               })}
             </div>
           ))}
+          <button className={styles.button}>add</button>
         </div>
       </div>
     </div>

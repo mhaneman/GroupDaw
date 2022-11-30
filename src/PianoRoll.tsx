@@ -6,15 +6,9 @@ import * as Tone from "tone";
 
 import styles from './PianoRoll.module.scss'
 
-import useWindowDimensions from './hooks/useWindowDimensions';
 import Keyboard from './Keyboard';
 
-// TODO 
-// schedule notes to play right pitch and time --> fix pitch
-// visually split measures / sub measures
-// s
-
-export default function PianoRoll({numOfSteps = 16}) {
+export default function PianoRoll({schedule}) {
 
   var channel = new Tone.Channel().toDestination();
   channel.volume.value = Tone.gainToDb(Number(0.3));
@@ -26,19 +20,20 @@ export default function PianoRoll({numOfSteps = 16}) {
     },
   }).connect(channel);
 
+  const [measures, setMeasures] = useState(2);
+  const [area, setArea] = useState({width: 1600, height: 600});
+  const [gridGap, setgridGap] = useState(25);
+  const [notes, setNotes] = useState([{x: 0, y:0}]);
+
   const piano_roll_editor_style = {
     height: '1000px', 
     width: '2000px', 
-    // background: 'repeating-linear-gradient(180deg, #222, #222 25px,#333 25px, #333 50px), repeating-linear-gradient(to right, transparent 0, transparent 22px, grey 25px)',
-    background: `repeating-linear-gradient(180deg, #22222280, #22222280 25px, #33333380 25px, #33333380 50px), 
-      repeating-linear-gradient(to right, transparent 0, transparent 195px, #000 200px),
-      repeating-linear-gradient(to right, transparent 0, transparent 22px, #ff333380 25px)`,
+    background: `repeating-linear-gradient(180deg, #22222280, #22222280 ${gridGap}px, #33333380 ${gridGap}px, #33333380 ${gridGap * 2}px), 
+      repeating-linear-gradient(to right, transparent 0, transparent ${gridGap * 8 - 4}px, #000 ${gridGap * 8}px),
+      repeating-linear-gradient(to right, transparent 0, transparent ${gridGap * 4 - 3}px, #707070 ${gridGap * 4}px),
+      repeating-linear-gradient(to right, transparent 0, transparent ${gridGap - 2}px, #ff333380 ${gridGap}px)`,
     backgroundSize: 'cover'
   }
-
-  const [area, setArea] = useState({width: 850, height: 600});
-
-  const [notes, setNotes] = useState([{x: 0, y:0}]);
 
   // doesnt work. need to figure out why
   const handleAddNewNote = (event) => {
@@ -46,15 +41,26 @@ export default function PianoRoll({numOfSteps = 16}) {
     const local_x = event.clientX - bounds.left;
     const local_y = event.clientY - bounds.top;
 
-    let m = 25
-    const quant_x = m*Math.floor(local_x/m)
-    const quant_y = m*Math.floor(local_y/m)
+    const quant_x = gridGap*Math.floor(local_x/gridGap)
+    const quant_y = gridGap*Math.floor(local_y/gridGap)
 
     setNotes([...notes, {x:quant_x, y:quant_y}]);
   }
 
+  const handlePlusSize = () => {
+    setgridGap(gridGap + 10);
+    console.log(gridGap);
+  }
+
+  const handleMinusSize = () => {
+    setgridGap(gridGap - 10);
+  }
+
   return (
     <div className="" onDoubleClick={handleAddNewNote}>
+      <button onClick={handleMinusSize}>-</button>
+      <button onClick={handlePlusSize}>+</button>
+
       <Resizable className={styles.piano_roll} style={{position: 'relative', overflow: 'auto', padding: '0', overflowY: 'visible'}}
         size={{ width: area.width, height: area.height }}
         onResizeStop={(e, direction, ref, d) => {
@@ -63,41 +69,45 @@ export default function PianoRoll({numOfSteps = 16}) {
             height: area.height + d.height,
           });
         }}>
-        <Keyboard />
+        <Keyboard instr={sampler} gridGap={gridGap}/>
         <div style={piano_roll_editor_style}>
-          {notes.map((note) => <Note instr={sampler} init_pos={note}/>)}
+          {notes.map((note) => <Note instr={sampler} gridGap={gridGap} init_pos={note} measures={measures} />)}
         </div>
       </Resizable>
     </div>
   )
 }
 
+type NoteProps = {
+  instr: any,
+  gridGap: any,
+  init_pos: any,
+  measures: any,
+  isLoopMode: boolean
+};
 
-// double click --> remove this note
-// need to convert note pos to absolute position
-function Note({instr, init_pos}) {
-  
-  // need to create an absolute position
+
+function Note({instr, gridGap, init_pos, measures}: NoteProps) {
   const [pos, setPos] = useState(init_pos);
-  const [area, setArea] = useState({width:100, height: 25});
+  const [area, setArea] = useState({width:100, height: gridGap});
 
   const noteRef = React.useRef<Tone.ToneEvent | null>(null); 
 
-  useEffect(() => {
+  // need a use effect to reposition and resize notes
 
-    // need to convert y-pos to pitch
+  useEffect(() => {
     const pitches = ["C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3"];
-    var pitch = pitches.at((pitches.length - 1) - pos.y / 25);
+    var pitch = pitches.at((pitches.length - 1) - pos.y / gridGap);
 
     noteRef.current = new Tone.ToneEvent(((time, chord) => {
       instr.triggerAttackRelease(chord, 0.5, time);
     }), pitch);
 
-    const dev = Math.pow(Tone.Transport.bpm.value / 60, -1) / (8 * 25); // converts x-pos to time
+    const dev = Math.pow(Tone.Transport.bpm.value / 60, -1) / (8 * gridGap); // converts x-pos to time
     noteRef.current.start(pos.x * dev);
     // noteRef.current.loop = 8;
     noteRef.current.loop = true;
-    noteRef.current.loopEnd = "1m";
+    noteRef.current.loopEnd = `${measures}m`;
 
     return () => {
       noteRef.current?.dispose();
@@ -120,9 +130,9 @@ function Note({instr, init_pos}) {
   }
 
   return (
-    <Draggable handle="#handle" grid={[25, 25]} bounds="parent" defaultPosition={init_pos} onDrag={handleDrag}>
+    <Draggable handle="#handle" grid={[gridGap, gridGap]} bounds="parent" defaultPosition={init_pos} onDrag={handleDrag}>
       <Resizable
-        size={{ width: area.width, height: area.height }}
+        size={{ width: area.width, height: gridGap }}
         style={{position: "absolute", border: "1px solid black"}}
         onResizeStop={(e, direction, ref, d) => handleArea(d)}>
           
