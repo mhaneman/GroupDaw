@@ -1,18 +1,8 @@
 .keyboard {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
 }
 
 .piano_roll {
   display: flex;
-}
-
-.piano_roll_editor {
-  background: repeating-linear-gradient(
-  180deg,
-  #606dbc,
-  #606dbc 25px,
-  #465298 25px,
-  #465298 50px
-  );
 }

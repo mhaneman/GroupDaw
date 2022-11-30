@@ -26,15 +26,17 @@ export default function PianoRoll({numOfSteps = 16}) {
     },
   }).connect(channel);
 
-  const bc_style = {
+  const piano_roll_editor_style = {
     height: '1000px', 
     width: '2000px', 
-    background: 'repeating-linear-gradient(180deg, #222, #222 25px,#333 25px, #333 50px)',
-    // background: 'repeating-linear-gradient(90deg, rgba(34,34,34,0.2), rgba(34,34,34,0.2) 25px,rgba(50,50,50,0.2) 25px, rgba(50,50,50,0.2) 50px), repeating-linear-gradient(180deg, rgba(34,34,34,0.8), rgba(34,34,34,0.8) 25px,rgba(50,50,50,0.8) 25px, rgba(50,50,50,0.8) 50px)',
+    // background: 'repeating-linear-gradient(180deg, #222, #222 25px,#333 25px, #333 50px), repeating-linear-gradient(to right, transparent 0, transparent 22px, grey 25px)',
+    background: `repeating-linear-gradient(180deg, #22222280, #22222280 25px, #33333380 25px, #33333380 50px), 
+      repeating-linear-gradient(to right, transparent 0, transparent 195px, #000 200px),
+      repeating-linear-gradient(to right, transparent 0, transparent 22px, #ff333380 25px)`,
     backgroundSize: 'cover'
   }
 
-  const [area, setArea] = useState({width: 1200, height: 300});
+  const [area, setArea] = useState({width: 850, height: 600});
 
   const [notes, setNotes] = useState([{x: 0, y:0}]);
 
@@ -53,7 +55,7 @@ export default function PianoRoll({numOfSteps = 16}) {
 
   return (
     <div className="" onDoubleClick={handleAddNewNote}>
-      <Resizable className={styles.piano_roll} style={{position: 'relative', overflow: 'auto', padding: '0'}}
+      <Resizable className={styles.piano_roll} style={{position: 'relative', overflow: 'auto', padding: '0', overflowY: 'visible'}}
         size={{ width: area.width, height: area.height }}
         onResizeStop={(e, direction, ref, d) => {
           setArea({
@@ -62,7 +64,7 @@ export default function PianoRoll({numOfSteps = 16}) {
           });
         }}>
         <Keyboard />
-        <div style={bc_style}>
+        <div style={piano_roll_editor_style}>
           {notes.map((note) => <Note instr={sampler} init_pos={note}/>)}
         </div>
       </Resizable>
@@ -84,14 +86,14 @@ function Note({instr, init_pos}) {
   useEffect(() => {
 
     // need to convert y-pos to pitch
-    const pitches = ["C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3"];
-    var pitch = pitches.at(pos.y / 25);
+    const pitches = ["C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3"];
+    var pitch = pitches.at((pitches.length - 1) - pos.y / 25);
 
     noteRef.current = new Tone.ToneEvent(((time, chord) => {
       instr.triggerAttackRelease(chord, 0.5, time);
     }), pitch);
 
-    const dev = Math.pow(Tone.Transport.bpm.value / 60, -1) / (16 * 25); // converts x-pos to time
+    const dev = Math.pow(Tone.Transport.bpm.value / 60, -1) / (8 * 25); // converts x-pos to time
     noteRef.current.start(pos.x * dev);
     // noteRef.current.loop = 8;
     noteRef.current.loop = true;

@@ -18,7 +18,7 @@ export default function Keyboard() {
     },
   }).connect(channel);
   
-    const pitches = ["C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3"];
+    const pitches = ["C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3"];
     const handleClick = (name: any) => {
         sampler.triggerAttack(name);
     };
@@ -42,10 +42,10 @@ const Key = ({name, action}: KeyProp) => {
     if (name.includes("#")) {
         return (
         <button onClick={() => action(name)} 
-            style={{backgroundColor: "black", color:"white", width:"50px", height:"25px"}}> 
+            style={{backgroundColor: "black", color:"white", display: 'block', width:"50px", height:"25px", resize:'none'}}> 
             {name} </button>);
     }
     return (<button onClick={()=> action(name)} 
-        style={{backgroundColor: "white", color:"black", width:"50px", height:"25px"}}> 
+        style={{backgroundColor: "white", color:"black", display: 'block', width:"50px", height:"25px", resize:'none'}}> 
         {name} </button>);
 }
